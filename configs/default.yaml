@@ -1,0 +1,48 @@
+# Labelfree configuration
+# Usage: labelfree train -c config.yaml
+
+# Data configuration
+# Expects dual-channel TIFF files: channel 0 = PC, channel 1 = FL
+data:
+  dir: /path/to/data  # Directory with dual-channel .tif files
+  pc_channel: 0       # Phase contrast channel index
+  fl_channel: 1       # Fluorescence channel index
+  patch_size: 256     # Training patch size
+  batch_size: 8
+  num_workers: 4
+  val_split: 0.1
+  test_split: 0.1
+  augment: true
+
+# Model configuration
+model:
+  architecture: attention_unet  # unet or attention_unet
+  base_filters: 64              # Doubles each level: 64->128->256->512->1024
+  depth: 4
+  dropout: 0.0
+
+# Loss configuration
+loss:
+  functions:
+    - mse
+    - ssim
+  weights:
+    - 0.8
+    - 0.2
+
+# Training configuration
+training:
+  optimizer: adamw
+  learning_rate: 0.0001
+  weight_decay: 0.00001
+  scheduler: cosine        # cosine, plateau, or none
+  max_epochs: 100
+  early_stopping: 20       # 0 to disable
+  accelerator: auto
+  devices: 1
+  precision: "32"
+
+# Output
+output_dir: outputs
+experiment_name: fluorescence_prediction
+seed: 42
